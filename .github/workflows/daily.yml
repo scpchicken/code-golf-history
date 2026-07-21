@@ -1,0 +1,39 @@
+name: Hourly Curl + Commit
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour at minute 0 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate dated file
+        run: |
+          YEAR=$(date -u +%Y)
+          MONTH=$(date -u +%m)
+          DAY=$(date -u +%d)
+          HOUR=$(date -u +%H)
+
+          DIR="$YEAR/$MONTH"
+          FILE="$DIR/$DAY-$HOUR.txt"
+
+          mkdir -p "$DIR"
+
+          curl -s https://example.com/api > "$FILE"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+          git commit -m "Update $(date -u +%Y-%m-%d-%H)" || exit 0
+          git push
