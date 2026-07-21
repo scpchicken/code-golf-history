@@ -1,8 +1,8 @@
-name: Hourly Curl + Commit
+name: Hourly Curl + Commit NEW2
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour at minute 0 UTC
+    - cron: "1 * * * *"   # every hour at minute 1 UTC
   workflow_dispatch:
 
 permissions:
@@ -13,21 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Generate dated file
         run: |
-          YEAR=$(date -u +%Y)
-          MONTH=$(date -u +%m)
-          DAY=$(date -u +%d)
-          HOUR=$(date -u +%H)
+          NOW=$(date -u +%Y-%m-%d-%H)
+
+          YEAR=${NOW:0:4}
+          MONTH=${NOW:5:2}
+          DAY=${NOW:8:2}
+          HOUR=${NOW:11:2}
 
           DIR="$YEAR/$MONTH"
-          FILE="$DIR/$DAY-$HOUR.txt"
+          FILE="$DIR/$DAY-$HOUR.json"
 
           mkdir -p "$DIR"
 
-          curl -s https://example.com/api > "$FILE"
+          curl -k -L https://code.golf/scores/all-holes/all-langs/all > "$FILE"
 
       - name: Commit changes
         run: |
@@ -35,5 +38,7 @@ jobs:
           git config user.email "github-actions@github.com"
 
           git add .
+
           git commit -m "Update $(date -u +%Y-%m-%d-%H)" || exit 0
+
           git push
