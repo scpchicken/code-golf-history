@@ -1,8 +1,6 @@
-name: Hourly Curl + Commit NEW3
+name: Daily Curl + Commit
 
 on:
-  schedule:
-    - cron: "1 * * * *"   # every hour at minute 1 UTC
   workflow_dispatch:
 
 permissions:
@@ -14,19 +12,18 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Generate dated file
         run: |
-          NOW=$(date -u +%Y-%m-%d-%H)
+          NOW=$(date -u +%Y-%m-%d)
 
           YEAR=${NOW:0:4}
           MONTH=${NOW:5:2}
           DAY=${NOW:8:2}
-          HOUR=${NOW:11:2}
 
           DIR="$YEAR/$MONTH"
-          FILE="$DIR/$DAY-$HOUR.json"
+          FILE="$DIR/$DAY.json"
 
           mkdir -p "$DIR"
 
@@ -39,6 +36,6 @@ jobs:
 
           git add .
 
-          git commit -m "Update $(date -u +%Y-%m-%d-%H)" || exit 0
+          git commit -m "Update $(date -u +%Y-%m-%d)" || exit 0
 
           git push
