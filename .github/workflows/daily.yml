@@ -1,4 +1,4 @@
-name: Hourly Curl + Commit NEW2
+name: Hourly Curl + Commit NEW3
 
 on:
   schedule:
@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Generate dated file
         run: |
